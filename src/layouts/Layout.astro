@@ -1,0 +1,39 @@
+---
+import "../assets/app.css";
+import Header from "../components/Header.astro";
+const HEADER_BASE_COLOR = "bg-primary text-primary-content";
+const SIDEBAR_BASE_COLOR = "bg-primary text-primary-content";
+const SIDEBAR_BASE_BG_COLOR = "bg-primary/50 text-primary-content";
+const CONTENT_BASE_COLOR = "bg-base-200 text-base-content";
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>vscode systemd.service</title>
+    <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
+  </head>
+  <body>
+    <!-- Header -->
+    <Header color={HEADER_BASE_COLOR} />
+    <!-- Header -->
+    <!-- Body -->
+    <div class:list={['', CONTENT_BASE_COLOR]}>
+      <slot />
+    </div>
+    <!-- Body -->
+  </body>
+</html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>

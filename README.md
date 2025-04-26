@@ -1,2 +1,32 @@
-# code-server
-vscode server
+# vscode systemd.service
+[![Build](https://github.com/rising3/code/actions/workflows/build.yml/badge.svg)](https://github.com/rising3/code/actions/workflows/build.yml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
+A smart entity that implements generic methods such as clone(), toJSON(), and fromJSON().
+
+## Requirements
+
+- systemd
+- aws
+- code
+
+## How to install
+
+To install:
+
+``` bash
+curl -s "https://rising3.github.io/code/get/" | bash
+```
+## How to build from source
+
+```sh
+git clone https://github.com/rising3/code.git
+cd code
+npm i
+npm run test
+npm run build
+```
+
+## License
+
+[Apache 2.0](LICENSE)
