@@ -1,1 +1,55 @@
-<!DOCTYPE html>echo "Hello,world!"
+#!/bin/bash
+
+ESC=$(printf '\033')
+TARGET_DIR=/home/$USER/.config/systemd/user/
+
+function helper_gen() {
+  cat <<EOS
+#!/bin/bash
+set -e
+
+ip=\$(ip -4 addr | awk '/state UP/ {i=\$2} /inet / && !f {sub(/\/.*/, "", \$2); if(i~/^e/||i~/^en/) {print \$2; f=1} else if(i~/^w/||i~/^wl/) {print \$2; f=1}} END{if(!f) print "0.0.0.0"}')
+
+echo "\$ip" > "${TARGET_DIR}/code-tmp"
+
+exit 0
+EOS
+}
+
+function service_gen() {
+  cat <<EOS
+[Unit]
+Description=VSCode Server service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStartPre=/bin/bash "${TARGET_DIR}/code-helper"
+ExecStart=/bin/bash -c '/usr/bin/code serve-web --without-connection-token --accept-server-license-terms --host \$(cat ${TARGET_DIR}/code-tmp)'
+ExecStartPost=/bin/bash -c "rm -f ${TARGET_DIR}/code-tmp"
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+EOS
+}
+
+mkdir -p "${TARGET_DIR}"
+
+printf "${ESC}[33m%s${ESC}[m\n" "enable linger $USER"
+
+if ! sudo loginctl enable-linger "$USER"; then
+  printf "${ESC}[31m%s${ESC}[m\n" "✖ linger failed"
+  exit 1
+fi
+printf "${ESC}[33m%s${ESC}[m\n" "✅ enable linger"
+
+echo -e "$(helper_gen)" >"${TARGET_DIR}/code-helper"
+echo -e "$(service_gen)" >"${TARGET_DIR}/code.service"
+
+systemctl --user daemon-reload
+systemctl --user enable code.service
+systemctl --user start code.service
+exit 0
