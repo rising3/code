@@ -2,13 +2,12 @@
 [![Build](https://github.com/rising3/code/actions/workflows/build.yml/badge.svg)](https://github.com/rising3/code/actions/workflows/build.yml)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
-A smart entity that implements generic methods such as clone(), toJSON(), and fromJSON().
 
 ## Requirements
 
-- systemd
+- Major Linux distributions that support systemd.
 - aws
-- code
+- vscode
 
 ## How to install
 
