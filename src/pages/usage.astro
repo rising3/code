@@ -1,0 +1,30 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout>
+  <!-- Content -->
+  <div class="text-center p-4 bg-base-100 text-base-content h-screen shadow-lg">
+    <h3 class="mb-4 antialiased text-3xl font-semibold">Start</h3>
+    <p class="pb-0 mb-2">Go on then, paste and run the following in a terminal:</p>
+    <div class="mb-2 mockup-code w-full lg:w-3/7 mx-auto">
+      <pre data-prefix="$" class="text-xs lg:text-base text-left"><code>systemctl --user start code</code></pre>
+    </div>   
+    <h3 class="m-4 antialiased text-3xl font-semibold">Stop</h3>
+    <p class="mb-3">Go on then, paste and run the following in a terminal:</p>
+    <div class="mb-3 mockup-code w-full lg:w-3/7 mx-auto">
+      <pre data-prefix="$" class="text-xs lg:text-base text-left"><code>systemctl --user stop code</code></pre>
+    </div>   
+    <h3 class="mb-4 antialiased text-3xl font-semibold">Status</h3>
+    <p class="mb-2">Go on then, paste and run the following in a terminal:</p>
+    <div class="mb-2 mockup-code w-full lg:w-3/7 mx-auto">
+      <pre data-prefix="$" class="text-xs lg:text-base text-left"><code>systemctl --user status code</code></pre>
+    </div>   
+  </div>
+  <!-- Content -->
+
+  <!-- Footer -->
+   <Footer/>
+   <!-- Footer -->
+</Layout>

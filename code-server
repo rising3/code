@@ -1,0 +1,97 @@
+#!/bin/bash
+#  Copyright 2025 rising3(Michio Nakagawa)
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+
+set -e
+
+ESC=$(printf '\033')
+TARGET_DIR=/home/$USER/.config/systemd/user
+
+function helper_gen() {
+  cat <<EOS
+#!/bin/bash
+set -e
+
+ip=\$(ip -4 addr | awk '/state UP/ {i=\$2} /inet / && !f {sub(/\/.*/, "", \$2); if(i~/^e/||i~/^en/) {print \$2; f=1} else if(i~/^w/||i~/^wl/) {print \$2; f=1}} END{if(!f) print "0.0.0.0"}')
+
+echo "\$ip" > "${TARGET_DIR}/code-tmp"
+
+exit 0
+EOS
+}
+
+function service_gen() {
+  cat <<EOS
+[Unit]
+Description=VSCode Server service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStartPre=/bin/bash "${TARGET_DIR}/code-helper"
+ExecStart=/bin/bash -c '/usr/bin/code serve-web --without-connection-token --accept-server-license-terms --host \$(cat ${TARGET_DIR}/code-tmp)'
+ExecStartPost=/bin/bash -c "rm -f ${TARGET_DIR}/code-tmp"
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+EOS
+}
+
+function enable_linger() {
+  if ! sudo loginctl enable-linger "$USER"; then
+    printf "${ESC}[31m%s${ESC}[m\n" "✖ enable linger failed"
+    exit 1
+  fi
+  printf "${ESC}[33m%s${ESC}[m\n" "✅ enable linger"
+  exit 0
+}
+
+# Array of required commands
+required_commands=("awk" "code")
+
+# Check if each command is installed
+for cmd in "${required_commands[@]}"; do
+  if ! command -v "$cmd" &>/dev/null; then
+    printf "${ESC}[31m%s${ESC}[m\n" "✖ $cmd is not installed. Please install it and try again."
+    exit 1
+  fi
+done
+
+if [ "$(ps -p 1 -o comm=)" != "systemd" ]; then
+  printf "${ESC}[31m%s${ESC}[m\n" "✖ This script is only for systemd"
+  exit 1
+fi
+
+if [ "$(loginctl show-user "$USER" | grep 'Linger=yes')" != "Linger=yes" ]; then
+  enable_linger
+fi
+
+if [ "$(systemctl --user is-active code.service)" == "active" ]; then
+  printf "${ESC}[33m%s${ESC}[m\n" "✅ code.service is already running"
+  exit 0
+fi
+
+mkdir -p "${TARGET_DIR}"
+
+echo -e "$(helper_gen)" >"${TARGET_DIR}/code-helper"
+echo -e "$(service_gen)" >"${TARGET_DIR}/code.service"
+
+systemctl --user daemon-reload
+systemctl --user enable code.service
+systemctl --user start code.service
+exit 0

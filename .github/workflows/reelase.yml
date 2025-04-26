@@ -1,0 +1,53 @@
+name: release-and-publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test
+        run: npm run test
+
+      - name: Build-astro
+        run: npm run build
+
+      - name: Build-shell
+        run: make
+
+      - name: Get Tag Version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Update version for package.json
+        run: |
+          jq '.version = "${{ env.VERSION }}"' package.json > temp.json && mv temp.json package.json
+
+      - name: dist
+        run: tar -zcvf dist.tgz dist
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          files: |
+            *.tgz code-server
