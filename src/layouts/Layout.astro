@@ -8,14 +8,24 @@ const CONTENT_BASE_COLOR = "bg-base-200 text-base-content";
 ---
 
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en">
   <head>
+    <script is:inline>
+      if (localStorage.getItem("theme") === null) {
+        document.documentElement.setAttribute("data-theme", "light");
+      } else {
+        document.documentElement.setAttribute("data-theme", localStorage.getItem("theme"));
+      }
+    </script>
+    <script>
+      import { themeChange } from "theme-change";
+      themeChange();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>vscode systemd.service</title>
-    <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
   </head>
   <body>
     <!-- Header -->

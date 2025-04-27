@@ -6,7 +6,7 @@
 ## Requirements
 
 - Major Linux distributions that support systemd.
-- aws
+- awk
 - vscode
 
 ## How to install
