@@ -18,11 +18,14 @@ curl -s "https://rising3.github.io/code/get/" | bash
 ```
 ## How to build from source
 
+### prerequisites
+
+node.js, npm, git need to be installed.
+
 ```sh
 git clone https://github.com/rising3/code.git
 cd code
 npm i
-npm run test
 npm run build
 ```
 
